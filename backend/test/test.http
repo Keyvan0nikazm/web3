@@ -1,0 +1,22 @@
+@baseUrl = http://localhost:3000
+
+### Try to get all expenses
+GET {{baseUrl}}/api/expenses
+Content-Type: application/json
+
+
+### try to create a ne expenses
+POST {{baseUrl}}/api/expenses
+Content-Type: application/json
+
+{
+  "id": "1",
+  "date": "2025-09-19T10:30:00.000Z",
+  "description": "Déjeuner équipe",
+  "pay": "Alice",
+  "amount": 72.50
+}
+
+### try to reset
+POST {{baseUrl}}/api/expenses/reset
+Content-Type: : application/json

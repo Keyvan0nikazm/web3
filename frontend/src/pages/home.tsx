@@ -1,44 +1,79 @@
-import { useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import ExpenseItem from '../components/ExpensiveItem';
 import type { Expense } from '../type'
+import ExpenseAdd from '../components/ExpenseAdd';
 
 const Home = () => {
-  const initialExpense: Expense[] = [
-    {
-      id: '1',
-      description: 'Courses alimentaires',
-      amount: 85.50,
-      date: '2025-09-18',
-      pay: 'Alice'
-    },
-    {
-      id: '2',
-      description: 'Essence voiture',
-      amount: 65.00,
-      date: '2025-09-17',
-      pay: 'Bob'
-    },
-    {
-      id: '3',
-      description: 'Restaurant',
-      amount: 42.75,
-      date: '2025-09-16',
-      pay: 'Dani'
-    },
-    {
-      id: '4',
-      description: 'Abonnement Netflix',
-      amount: 15.99,
-      date: '2025-09-15',
-      pay: 'Ethan'
-    }
-  ];
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetMessage, setResetMessage] = useState<string | null>(null);
+  const [resetError, setResetError] = useState(false);
+  const isMounted = useRef(true);
 
-  const [expenses] = useState<Expense[]>(initialExpense);
+  // get host from env and ensure no trailing slash
+  const rawHost = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+  const host = rawHost.replace(/\/$/, '');
+
+  const loadExpenses = async () => {
+    try {
+      const res = await fetch(`${host}/api/expenses`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data: Expense[] = await res.json();
+      if (isMounted.current) setExpenses(data);
+    } catch (err) {
+      console.error('error loading expenses', err);
+      // optionally clear or keep existing list; here we keep existing
+    }
+  };
+
+  useEffect(() => {
+    isMounted.current = true;
+    loadExpenses();
+    return () => { isMounted.current = false; };
+  }, []);
+
+  const handleReset = async () => {
+    setResetLoading(true);
+    setResetMessage(null);
+    setResetError(false);
+    try {
+      const res = await fetch(`${host}/api/expenses/reset`, { method: 'POST' });
+      if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        throw new Error(`HTTP ${res.status} ${text}`);
+      }
+      setResetMessage('Données réinitialisées avec succès.');
+      setResetError(false);
+      await loadExpenses();
+    } catch (err) {
+      console.error('Reset failed', err);
+      setResetMessage(`Échec de la réinitialisation: ${err instanceof Error ? err.message : String(err)}`);
+      setResetError(true);
+    } finally {
+      if (isMounted.current) setResetLoading(false);
+    }
+  };
+
+  const handleAdd = (newExpense: Expense) => {
+    setExpenses(prev => [newExpense, ...prev]);
+  }
 
   return (
     <div className="home-page">
       <h1>Mes Dépenses</h1>
+
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 12 }}>
+        <ExpenseAdd handledAdd={handleAdd} />
+        <button onClick={handleReset} disabled={resetLoading} aria-busy={resetLoading}>
+          {resetLoading ? 'Réinitialisation...' : 'Reset Data'}
+        </button>
+        {resetMessage && (
+          <div style={{ color: resetError ? 'crimson' : 'green' }}>
+            {resetMessage}
+          </div>
+        )}
+      </div>
+
       <div className="expenses-list">
         {expenses.map((expense) => (
           <ExpenseItem 
