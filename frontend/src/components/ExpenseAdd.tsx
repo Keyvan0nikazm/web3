@@ -7,6 +7,7 @@ interface ExpenseItemAdd{
 
 const ExpenseAdd = ({handledAdd} : ExpenseItemAdd) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const host = import.meta.env.VITE_API_URL || 'http://unknown-api-url.com';
 
     const onAdd = async () => {
         setIsSubmitting(true);
@@ -21,7 +22,7 @@ const ExpenseAdd = ({handledAdd} : ExpenseItemAdd) => {
                 amount,
             };
 
-            const res = await fetch('http://localhost:3000/api/expenses', {
+            const res = await fetch(`${host}/api/expenses`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newExpense),

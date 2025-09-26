@@ -11,8 +11,7 @@ const Home = () => {
   const isMounted = useRef(true);
 
   // get host from env and ensure no trailing slash
-  const rawHost = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-  const host = rawHost.replace(/\/$/, '');
+  const host = import.meta.env.VITE_API_URL || 'http://unknown-api-url.com';
 
   const loadExpenses = async () => {
     try {
