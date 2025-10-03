@@ -1,31 +1,55 @@
-const fs = require('fs');
-const path = require('path');
+const { PrismaClient } = require('../generated/prisma');
+const prisma = new PrismaClient();
 
-const EXPENSES_FILE_PATH = path.join(__dirname, '../data/expenses.json');
-const EXPENSES_INIT_FILE_PATH = path.join(__dirname, '../data/expenses.init.json');
-
-function getAllExpenses() {
-    const raw = fs.readFileSync(EXPENSES_FILE_PATH, 'utf8')
-    return JSON.parse(raw)
+async function findMany() {
+    const expense = await prisma.expense.findMany({
+        orderBy: {
+            date: 'desc'
+        }
+    })
+    return expense;
+    
 };
 
-function addExpenses(newExpense){
-    const expenses = getAllExpenses();
-    expenses.push(newExpense);
-
-    const update = JSON.stringify(expenses, null, 2);
-    fs.writeFileSync(EXPENSES_FILE_PATH, update);
-    return newExpense;
+async function create(newExpense){
+    const expenses = await prisma.expense.create({
+            data: {
+                date: new Date(newExpense.date),
+                description: newExpense.description,
+                payer: newExpense.payer, // Note: ton schema utilise 'payer' mais ton frontend envoie 'pay'
+                amount: parseFloat(newExpense.amount)
+            }
+        });
+    return expenses;
 }
 
-function resetExpenses(){
-    const initData = fs.readFileSync(EXPENSES_INIT_FILE_PATH, 'utf8');
-    fs.writeFileSync(EXPENSES_FILE_PATH, initData);
-    return JSON.parse(initData);
+async function resetExpenses(){
+    await prisma.expense.deleteMany();
+        
+        // Recréer les expenses par défaut
+        const defaultExpenses = await prisma.expense.createMany({
+            data: [
+                {
+                    date: new Date('2024-01-15T10:00:00Z'),
+                    description: 'Restaurant avec Alice',
+                    payer: 'Alice',
+                    amount: 45.50,
+                },
+                {
+                    date: new Date('2024-01-16T14:30:00Z'),
+                    description: 'Courses partagées',
+                    payer: 'Bob',
+                    amount: 23.75,
+                }
+            ]
+        });
+        
+        // Retourner les nouvelles expenses
+        return await getAllExpenses();
 }
 
 module.exports = {
-    getAllExpenses,
-    addExpenses,
+    findMany,
+    create,
     resetExpenses,
 };

@@ -1,5 +1,41 @@
 [
-  { "id": "1", "date": "2025-01-16", "description": "Example expense #1 from Alice", "payer": "Alice", "amount": 25.5 },
-  { "id": "2", "date": "2025-01-15", "description": "Example expense #2 from Bob", "payer": "Bob", "amount": 35 },
-  { "id": "3", "date": "2025-01-15", "description": "Example expense #3 from Alice", "payer": "Alice", "amount": 2 }
+  {
+    "id": "1",
+    "date": "2025-01-16",
+    "description": "Example expense #1 from Alice",
+    "payer": "Alice",
+    "amount": 25.5
+  },
+  {
+    "id": "2",
+    "date": "2025-01-15",
+    "description": "Example expense #2 from Bob",
+    "payer": "Bob",
+    "amount": 35
+  },
+  {
+    "id": "3",
+    "date": "2025-01-15",
+    "description": "Example expense #3 from Alice",
+    "payer": "Alice",
+    "amount": 2
+  },
+  {
+    "id": "1759477374031",
+    "date": "2025-10-03",
+    "description": "voici la personne qui a payer : Alice",
+    "amount": 79.96
+  },
+  {
+    "id": "1759477375397",
+    "date": "2025-10-03",
+    "description": "voici la personne qui a payer : Alice",
+    "amount": 31.05
+  },
+  {
+    "id": "1759477376387",
+    "date": "2025-10-03",
+    "description": "voici la personne qui a payer : Alice",
+    "amount": 33.6
+  }
 ]
