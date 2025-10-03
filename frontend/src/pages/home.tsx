@@ -1,9 +1,11 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
+import { PageContext } from '../App';
 import ExpenseItem from '../components/ExpensiveItem';
 import type { Expense } from '../type'
 import ExpenseAdd from '../components/ExpenseAdd';
 
 const Home = () => {
+  const { setCurrentPage } = useContext(PageContext);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [resetLoading, setResetLoading] = useState(false);
   const [resetMessage, setResetMessage] = useState<string | null>(null);
@@ -60,6 +62,12 @@ const Home = () => {
   return (
     <div className="home-page">
       <h1>Mes Dépenses</h1>
+
+      <div style={{ marginBottom: '12px', display: 'flex', gap: '10px' }}>
+        <button onClick={() => setCurrentPage('Welcome')}>Accueil</button>
+        <button onClick={() => setCurrentPage('List')}>Liste</button>
+        <button onClick={() => setCurrentPage('Add')}>Ajouter</button>
+      </div>
 
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 12 }}>
         <ExpenseAdd handledAdd={handleAdd} />
